@@ -2,18 +2,17 @@ package main
 
 import (
 	"fmt"
+  "os"
 	"strings"
 )
 
 func main() {
-	// script := arg
-	// givens := arg
-	var givens []string
-	for i := 0; i < 81; i++ {
+	script := os.Args[1]
+  fmt.Println(fmt.Sprint("********* script %s ***********", script))
+	givens := strings.Split(os.Args[2], "")
+	for i := len(givens); i < 81; i++ {
 		givens = append(givens, ".")
 	}
-	// TODO: pad givens out to 81 characters with dots
-	// TODO: convert string to slice of strings/(bytes?)
 	var choices []string
 	for i := 0; i < 81; i++ {
 		choices = append(choices, "123456789")
@@ -54,6 +53,7 @@ func main() {
 	}
 
 	// remove choices eliminated by the at-most-one rule
+  // fmt.Println("--- iterate over subsets to build matrix of options ---")
 	for _, subset := range subsets {
 		for _, i := range subset {
 			// fmt.Println(fmt.Sprintf("%d, givens = %v", i, givens[i]))
@@ -62,14 +62,30 @@ func main() {
 				continue
 			}
 			for _, j := range subset {
-				fmt.Println(fmt.Sprintf("%d, %d - digit = %v", i, j, digit))
+				// fmt.Println(fmt.Sprintf("%d, %d - digit = %v", i, j, digit))
 				// remove the specified digit from the set of advertised choices for this spot
-				choices[j] = strings.Replace(choices[j], digit, "")
+				choices[j] = strings.Replace(choices[j], digit, "", -1)
 			}
 		}
 	}
 
+  // identify choices mandated by the at-least-one-rule
+  // var unique []string
+  for _, subset := range subsets {
+    var counts []int
+    for _, i := range subset {
+      if givens[i] == "." {
+        continue
+      }
+      c := choices[i]
+      // TODO next: translate: for my $d ($choices =~ m/(.)/g)
+      fmt.Println(fmt.Sprintf("%v", c))
+    }
+  }
+
+	fmt.Println("--          --")
 	fmt.Println("-- sudokant --")
+	fmt.Println("--          --")
 	fmt.Println(fmt.Sprintf("choices: %v", choices))
 	fmt.Println(fmt.Sprintf("subsets: %v", subsets))
 }
