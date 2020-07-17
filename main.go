@@ -2,15 +2,18 @@ package main
 
 import (
 	"fmt"
-  "os"
+	"os"
+	"regexp"
+	"strconv"
 	"strings"
 )
 
 func main() {
 	script := os.Args[1]
-  fmt.Println(fmt.Sprint("********* script %s ***********", script))
+	fmt.Println(fmt.Sprintf("********* script: %s ***********", script))
 	givens := strings.Split(os.Args[2], "")
-	for i := len(givens); i < 81; i++ {
+	boardArea := 81
+	for i := len(givens); i < boardArea; i++ {
 		givens = append(givens, ".")
 	}
 	var choices []string
@@ -53,7 +56,7 @@ func main() {
 	}
 
 	// remove choices eliminated by the at-most-one rule
-  // fmt.Println("--- iterate over subsets to build matrix of options ---")
+	// fmt.Println("--- iterate over subsets to build matrix of options ---")
 	for _, subset := range subsets {
 		for _, i := range subset {
 			// fmt.Println(fmt.Sprintf("%d, givens = %v", i, givens[i]))
@@ -69,23 +72,31 @@ func main() {
 		}
 	}
 
-  // identify choices mandated by the at-least-one-rule
-  // var unique []string
-  for _, subset := range subsets {
-    var counts []int
-    for _, i := range subset {
-      if givens[i] == "." {
-        continue
-      }
-      c := choices[i]
-      // TODO next: translate: for my $d ($choices =~ m/(.)/g)
-      fmt.Println(fmt.Sprintf("%v", c))
-    }
-  }
+	// identify choices mandated by the at-least-one-rule
+	// var unique []string
+	for _, subset := range subsets {
+		var counts = make([]int, boardArea)
+		var w = make([]int, boardArea)
+		// fmt.Printf("counts = %#v\n", counts)
+		for _, i := range subset {
+			if givens[i] == "." {
+				continue
+			}
+			r := regexp.MustCompile(`(.)`)
+			// fmt.Printf("c = %#v\n", c)
+			// fmt.Printf("findallsubmatch = %#v\n", r.FindAllStringSubmatch(c, -1))
+			nums := r.FindAllStringSubmatch(choices[i], -1)
+			for _, num := range nums {
+				d, _ := strconv.Atoi(num[0])
+				counts[d] = counts[d] + 1
+				w[d] = i
+			}
+			// fmt.Println(fmt.Sprintf("%v", c))
+		}
+	}
 
 	fmt.Println("--          --")
 	fmt.Println("-- sudokant --")
 	fmt.Println("--          --")
 	fmt.Println(fmt.Sprintf("choices: %v", choices))
-	fmt.Println(fmt.Sprintf("subsets: %v", subsets))
 }
