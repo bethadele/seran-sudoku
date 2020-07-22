@@ -56,16 +56,13 @@ func main() {
 	}
 
 	// remove choices eliminated by the at-most-one rule
-	// fmt.Println("--- iterate over subsets to build matrix of options ---")
 	for _, subset := range subsets {
 		for _, i := range subset {
-			// fmt.Println(fmt.Sprintf("%d, givens = %v", i, givens[i]))
 			digit := givens[i]
 			if digit == "." {
 				continue
 			}
 			for _, j := range subset {
-				// fmt.Println(fmt.Sprintf("%d, %d - digit = %v", i, j, digit))
 				// remove the specified digit from the set of advertised choices for this spot
 				choices[j] = strings.Replace(choices[j], digit, "", -1)
 			}
@@ -73,25 +70,29 @@ func main() {
 	}
 
 	// identify choices mandated by the at-least-one-rule
-	// var unique []string
+	var unique = make([]int, boardArea)
 	for _, subset := range subsets {
 		var counts = make([]int, boardArea)
-		var w = make([]int, boardArea)
-		// fmt.Printf("counts = %#v\n", counts)
+		var whr = make([]int, boardArea)
 		for _, i := range subset {
 			if givens[i] == "." {
 				continue
 			}
 			r := regexp.MustCompile(`(.)`)
-			// fmt.Printf("c = %#v\n", c)
-			// fmt.Printf("findallsubmatch = %#v\n", r.FindAllStringSubmatch(c, -1))
 			nums := r.FindAllStringSubmatch(choices[i], -1)
 			for _, num := range nums {
 				d, _ := strconv.Atoi(num[0])
 				counts[d] = counts[d] + 1
-				w[d] = i
+				whr[d] = i
 			}
-			// fmt.Println(fmt.Sprintf("%v", c))
+		}
+
+		for _, d := range []int{1, 2, 3, 4, 5, 6, 7, 8, 9} {
+			if counts[d] != 1 {
+				continue
+			}
+			fmt.Printf("d = %v, whr[d] = %v\n", d, whr[d])
+			unique[whr[d]] = d
 		}
 	}
 
@@ -99,4 +100,5 @@ func main() {
 	fmt.Println("-- sudokant --")
 	fmt.Println("--          --")
 	fmt.Println(fmt.Sprintf("choices: %v", choices))
+	fmt.Println(fmt.Sprintf("unique: %v", unique))
 }
