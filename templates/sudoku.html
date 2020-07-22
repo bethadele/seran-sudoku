@@ -1,0 +1,43 @@
+<html>
+  <head>
+    <title>Sudokant!</title>
+    <style>
+      body {
+        text-align: center;
+      }
+     a {
+       text-decoration: none;
+     }
+     table {
+       color: gray;
+       width: 400px;
+     }
+    </style>
+  </head>
+  <body>
+    {{.Board}}
+    <br><br>
+      About Sudokant, the Sudoku Servant
+      <br><table><tr><td>
+        This server helps you solve <a href=http://www.sudoku.com/>sudoku puzzles</a>
+        by showing choices satisfying two simple rules: <i>at-most-one</i> and <i>at-least-one</i>
+        of every digit must appear in every row, column and square.
+        Choices that violate the <i>at-most-one</i> rule are omitted.
+        Alternatives to digits that must be chosen by the <i>at-least-one</i> rule are grayed.
+        <br><br>
+        Empty squares are dead ends. Back up the browser
+        to make a new choice. The above rules are insufficent to solve the hardest
+        puzzles. You can guess or look for a third rule. This program will help you
+        find these most interesting places in the hardest puzzles without becomming a
+        mechanical master of the simpler logic.
+        <br><br>Each step has a unique url that you can bookmark or send to
+        friends. Use this <a href="{{.Script}}?{{.Blank}}">blank page</a> to enter new puzzles.
+        Contribute your insights and most diabolical puzzles to the
+        <a href=http://c2.com/cgi/wiki?SuDoku>SuDoku</a> page on my wiki.
+      </table><br>
+      <footer>
+        &copy;2005 Ward Cunningham<br>
+        &copy;2020 Ward Cunningham, Joshua Benuck, Eric Dobbs, Beth Long
+      </footer>
+  </body>
+</html>

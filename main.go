@@ -1,16 +1,17 @@
 package main
 
 import (
+	"bytes"
 	"fmt"
 	"os"
 	"regexp"
 	"strconv"
 	"strings"
+  "html/template"
 )
 
 func main() {
 	script := os.Args[1]
-	fmt.Println(fmt.Sprintf("********* script: %s ***********", script))
 	givens := strings.Split(os.Args[2], "")
 	boardArea := 81
 	for i := len(givens); i < boardArea; i++ {
@@ -96,9 +97,41 @@ func main() {
 		}
 	}
 
-	fmt.Println("--          --")
-	fmt.Println("-- sudokant --")
-	fmt.Println("--          --")
-	fmt.Println(fmt.Sprintf("choices: %v", choices))
-	fmt.Println(fmt.Sprintf("unique: %v", unique))
+  var blank bytes.Buffer
+	for i := 0; i < boardArea; i++ {
+		blank.WriteString(".")
+	}
+
+	t, err := template.ParseFiles("templates/sudoku.html")
+  if err != nil {
+    panic(err)
+  }
+
+  board := table("X")
+  data := struct {
+    Board string
+    Script string
+    Blank string
+  }{board, script, blank.String()}
+
+  err = t.Execute(os.Stdout, data)
+  if err != nil {
+    panic(err)
+  }
+}
+
+// TODO next: this is not really working;
+// first, the HTML is getting sanitized;
+// second, we're not getting the right grid size
+func table(x string) string {
+  sq := "\n<td>" + x + "</td>"
+  tb := ""
+  for i := 0; i < 3; i++ {
+    tb = tb + "\n<tr>"
+    for j := 0; j < 3; j++ {
+      tb = tb + sq
+    }
+    tb = tb + "</tr>"
+  }
+  return "\n<table>" + tb + "</table>"
 }
